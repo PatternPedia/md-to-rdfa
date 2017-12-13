@@ -7,9 +7,9 @@ var markdownContent = fs.readFileSync('./markdown.md', 'utf8');
 renderer.paragraph = function(text, rdfaTokens) {
   let rdfaTags = "";
   rdfaTokens.forEach(token => {
-    rdfaTags = rdfaTags.concat(`${token.key}="${token.value}" `)
+    rdfaTags = rdfaTags.concat(`${token.key}="${token.value}"`)
   });
-  return `<p${rdfaTags}>${text}</p>\n`;
+  return `<p ${rdfaTags}>${text}\n</p>\n`;
 }
 
 console.log(marked(markdownContent, { renderer: renderer }));

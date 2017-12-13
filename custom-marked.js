@@ -430,6 +430,8 @@
           var text = cap[1];
           var regex = /\{(.*?)\}/;
           var propertyPattern = /\(([^)]+)\)\[([^\]]+)\]/g
+          var linkPattern = /\(\s*([^)]+)\s*\)\s*\[([^\]]*)\]\s*\(\s*([^)]+)\s*\)/g
+          var imagePattern = /!\(\s*([^)]+)\s*\)\s*\[([^\]]*)\]\s*\(\s*([^)]+)\s*\)/g
           var matched = text.match(regex);
           
           var rdfaTokens = [{
@@ -450,12 +452,25 @@
             }
           }
 
+          //get image tags
+          var imageProperties = [];
+          while((m = imagePattern.exec(text)) != null) {
+            text = text.replace(m[0],`<image property="${m[1]}" src="${m[3]}"></image>`)
+          }
+
+          // get link tags
+          var linkProperties = [];
+          while((m = linkPattern.exec(text)) != null) {
+            console.log(m)
+            text = text.replace(m[0],`<a href="${m[3]}" property="${m[1]}">${m[2]}</a>`)
+          }
+
           // get rdf properties
           var properties = [];
           while ((match = propertyPattern.exec(text)) != null) {
             properties.push(match);
           }
-          console.log(properties);
+          
           properties.forEach(p => {
             text = text.replace(p[0],`<span property="${p[1]}">${p[2]}</span>` )
           })
