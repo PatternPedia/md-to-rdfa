@@ -429,11 +429,12 @@
           src = src.substring(cap[0].length);
           var text = cap[1];
           var regex = /\{(.*?)\}/;
+          var propertyPattern = /\(([^)]+)\)\[([^\]]+)\]/g
           var matched = text.match(regex);
-          var splitBySpace = matched[1].split(" ");
+          
           var rdfaTokens = [{
-            key: splitBySpace[0],
-            value: splitBySpace[1]
+            key: matched[1].substr(0, matched[1].indexOf(' ')),
+            value: matched[1].substr(matched[1].indexOf(' ')+1)
           }]
         
          
@@ -443,18 +444,28 @@
             matched = text.match(regex);
             if(matched){
               rdfaTokens.push({
-                key: matched[1].split(" ")[0],
-                value: matched[1].split(" ")[1]
+                key: matched[1].substr(0, matched[1].indexOf(' ')),
+                value: matched[1].substr(matched[1].indexOf(' ')+1)
              })
             }
           }
+
+          // get rdf properties
+          var properties = [];
+          while ((match = propertyPattern.exec(text)) != null) {
+            properties.push(match);
+          }
+          console.log(properties);
+          properties.forEach(p => {
+            text = text.replace(p[0],`<span property="${p[1]}">${p[2]}</span>` )
+          })
+
       
+
           this.tokens.push({
             type: 'paragraph',
             rdfaTokens: rdfaTokens,
-            text: cap[1].charAt(cap[1].length - 1) === '\n'
-              ? cap[1].slice(0, -1)
-              : cap[1]
+            text: text
           });
           continue;
         }

@@ -5,13 +5,11 @@ var renderer = new marked.Renderer();
 var markdownContent = fs.readFileSync('./markdown.md', 'utf8');
 
 renderer.paragraph = function(text, rdfaTokens) {
-  let paragraphBegining = '<p '
+  let rdfaTags = "";
   rdfaTokens.forEach(token => {
-    paragraphBegining = paragraphBegining.concat(token.key + '="' + token.value + '" ')
+    rdfaTags = rdfaTags.concat(`${token.key}="${token.value}" `)
   });
-  paragraphBegining = paragraphBegining.concat('>')
-  console.log(paragraphBegining);
-  return paragraphBegining + text + '</p>\n';
+  return `<p${rdfaTags}>${text}</p>\n`;
 }
 
-marked(markdownContent, { renderer: renderer });
+console.log(marked(markdownContent, { renderer: renderer }));
